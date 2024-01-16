@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"time"
@@ -11,6 +12,8 @@ import (
 const token = "6703355257:AAGbmXkZwHQ4Tn-z8tGnMAAd_1VhI9mpzpE"
 
 func main() {
+	_ = godotenv.Load()
+
 	token := os.Getenv("TOKEN")
 
 	bot, err := tgbotapi.NewBotAPI(token)

@@ -18,3 +18,7 @@ func (c *Commander) List(inputMessage *tgbotapi.Message) {
 		log.Panic(err)
 	}
 }
+
+func init() {
+	registeredCommands["list"] = (*Commander).List
+}

@@ -13,3 +13,7 @@ func (c *Commander) Help(inputMessage *tgbotapi.Message) {
 		log.Panic(err)
 	}
 }
+
+func init() {
+	registeredCommands["help"] = (*Commander).Help
+}

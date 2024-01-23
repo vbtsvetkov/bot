@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/joho/godotenv"
+	"github.com/vbtsvetkov/bot/internal/app/commands"
 	"github.com/vbtsvetkov/bot/internal/sevice/product"
 	"log"
 	"os"
@@ -33,6 +34,7 @@ func main() {
 	updates.Clear()
 
 	productService := product.NewService()
+	commander := commands.NewCommander(bot, productService)
 
 	for update := range updates {
 		if update.Message == nil {
@@ -41,43 +43,11 @@ func main() {
 
 		switch update.Message.Command() {
 		case "help":
-			helpCommand(bot, update.Message)
+			commander.Help(update.Message)
 		case "list":
-			listCommand(bot, update.Message, productService)
+			commander.List(update.Message)
 		default:
-			defaultBehavior(bot, update.Message)
+			commander.Default(update.Message)
 		}
-	}
-}
-
-func helpCommand(bot *tgbotapi.BotAPI, inputMessage *tgbotapi.Message) {
-	msg := tgbotapi.NewMessage(inputMessage.Chat.ID,
-		"/help - help\n"+
-			"/list - list products")
-	if _, err := bot.Send(msg); err != nil {
-		log.Panic(err)
-	}
-}
-
-func listCommand(bot *tgbotapi.BotAPI, inputMessage *tgbotapi.Message, productService *product.Service) {
-	outputMsg := "Here all products: \n\n"
-	products := productService.List()
-
-	for _, p := range products {
-		outputMsg += p.Title + "\n"
-	}
-
-	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, outputMsg)
-	if _, err := bot.Send(msg); err != nil {
-		log.Panic(err)
-	}
-}
-
-func defaultBehavior(bot *tgbotapi.BotAPI, inputMessage *tgbotapi.Message) {
-	log.Printf("[%s] %s", inputMessage.From.UserName, inputMessage.Text)
-
-	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, "You wrote: "+inputMessage.Text)
-	if _, err := bot.Send(msg); err != nil {
-		log.Panic(err)
 	}
 }
